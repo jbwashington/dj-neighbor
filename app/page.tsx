@@ -91,10 +91,6 @@ export default function Home() {
           <div className="meta">heard {timeAgo(song.recognizedAt)}</div>
         </div>
       )}
-
-      <a className="footer-link" href="/listen">
-        listener device →
-      </a>
     </main>
   );
 }
