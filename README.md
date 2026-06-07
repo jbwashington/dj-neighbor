@@ -70,9 +70,10 @@ context: `localhost` works, and any HTTPS origin works.
 
 ## Self-hosting
 
-This instance runs on an always-on Mac Mini as managed services. Full ops notes
-— LaunchAgents for the app and recognizer, the Cloudflare quick-tunnel daemon,
-and the Tailscale HTTPS proxy — live in [`deploy/README.md`](deploy/README.md).
+This instance runs on an always-on Mac Mini as managed services, public at
+**https://dj.negroindustries.com** via a Cloudflare named tunnel. Full ops notes
+— LaunchAgents for the app and recognizer, the named-tunnel daemon, and the
+Tailscale HTTPS proxy — live in [`deploy/README.md`](deploy/README.md).
 
 Key gotchas baked into the code:
 

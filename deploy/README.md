@@ -1,16 +1,23 @@
 # dj-neighbor — self-hosted on the Mac Mini
 
-Runs as two managed services, mirroring the existing homelab tunnel pattern.
+Public URL: **https://dj.negroindustries.com** (Cloudflare named tunnel).
+
+Runs as three managed services, mirroring the existing homelab tunnel pattern.
 
 | Piece          | What                                   | Where |
 |----------------|----------------------------------------|-------|
-| App            | `next start -p 3247` (user LaunchAgent)| `~/Library/LaunchAgents/com.djneighbor.app.plist` |
-| Tunnel         | `cloudflared` quick tunnel (root Daemon)| `/Library/LaunchDaemons/com.cloudflare.cloudflared.dj-neighbor.plist` |
-| App env        | token + listener secret                | `.env.local` |
-| App logs       |                                        | `~/Library/Logs/com.djneighbor.app.{out,err}.log` |
-| Tunnel logs    | the public URL is printed here         | `/Library/Logs/com.cloudflare.cloudflared.dj-neighbor.err.log` |
+| App            | `next start -H 127.0.0.1 -p 3247` (user LaunchAgent)| `~/Library/LaunchAgents/com.djneighbor.app.plist` |
+| Recognizer     | shazamio FastAPI on `127.0.0.1:3251` (user LaunchAgent)| `~/Library/LaunchAgents/com.djneighbor.recognizer.plist` |
+| Tunnel         | `cloudflared` **named** tunnel `dj-neighbor` (root Daemon)| `/Library/LaunchDaemons/com.cloudflare.cloudflared.dj-neighbor.plist` |
+| Tunnel config  | ingress `dj.negroindustries.com` → `127.0.0.1:3247` | `~/.cloudflared/dj-neighbor.yml` |
+| App env        | listener secret, recognizer backend    | `.env.local` |
+| Logs           |                                        | `~/Library/Logs/com.djneighbor.{app,recognizer}.{out,err}.log` |
 
-Single long-lived process, so the in-memory store is fine — no Upstash needed.
+Single long-lived process, so the in-memory now-playing store is fine — no Upstash
+needed. Play history persists to `.data/history.json`.
+
+The app **must** bind `127.0.0.1` (not `0.0.0.0`): binding all interfaces collides
+with the Tailscale `serve` listener on the same port (`EADDRINUSE`).
 
 ## App service (already installed)
 
@@ -26,7 +33,14 @@ launchctl bootstrap  gui/$(id -u) ~/Library/LaunchAgents/com.djneighbor.app.plis
 
 After changing source: `npm run build` then kickstart.
 
-## Tunnel daemon (needs sudo once)
+## Recognizer service
+
+```bash
+launchctl kickstart -k gui/$(id -u)/com.djneighbor.recognizer   # restart
+curl -s http://127.0.0.1:3251/health                            # {"ok":true}
+```
+
+## Tunnel daemon (named tunnel, needs sudo to install)
 
 ```bash
 sudo cp deploy/com.cloudflare.cloudflared.dj-neighbor.plist /Library/LaunchDaemons/
@@ -34,20 +48,19 @@ sudo chown root:wheel /Library/LaunchDaemons/com.cloudflare.cloudflared.dj-neigh
 sudo launchctl bootstrap system /Library/LaunchDaemons/com.cloudflare.cloudflared.dj-neighbor.plist
 ```
 
-### Get the current public URL (quick tunnels change on restart)
+The daemon runs `cloudflared --config ~/.cloudflared/dj-neighbor.yml tunnel run dj-neighbor`.
+
+### How the named tunnel was set up
 
 ```bash
-grep -Eo 'https://[a-z0-9-]+\.trycloudflare\.com' \
-  /Library/Logs/com.cloudflare.cloudflared.dj-neighbor.err.log | tail -1
+cloudflared tunnel create dj-neighbor          # -> tunnel id + ~/.cloudflared/<id>.json
+# DNS: CNAME dj.negroindustries.com -> <id>.cfargotunnel.com (proxied).
+# NB: the cloudflared cert isn't authorized for negroindustries.com, so the
+# record was created via the Cloudflare API/dashboard, not `tunnel route dns`.
+# ~/.cloudflared/dj-neighbor.yml: ingress dj.negroindustries.com -> http://127.0.0.1:3247
 ```
 
-## Upgrade to a stable URL later
+## Other access paths
 
-Replace the quick-tunnel daemon with a named tunnel (like your other services):
-
-```bash
-cloudflared tunnel create dj-neighbor
-cloudflared tunnel route dns dj-neighbor djneighbor.<your-domain>
-# write ~/.cloudflared/dj-neighbor.yml with an ingress rule -> http://localhost:3247
-# then point the daemon's ProgramArguments at: tunnel --config <file> run dj-neighbor
-```
+- Tailscale (tailnet-only, HTTPS): `https://jamess-mac-mini.tail5b1923.ts.net:3247/`
+- Local on the Mini: `http://localhost:3247/`

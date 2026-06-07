@@ -8,9 +8,11 @@
 		<array>
 			<string>/opt/homebrew/bin/cloudflared</string>
 			<string>--no-autoupdate</string>
+			<string>--config</string>
+			<string>/Users/jbwashington/.cloudflared/dj-neighbor.yml</string>
 			<string>tunnel</string>
-			<string>--url</string>
-			<string>http://localhost:3247</string>
+			<string>run</string>
+			<string>dj-neighbor</string>
 		</array>
 		<key>RunAtLoad</key>
 		<true/>
