@@ -15,6 +15,9 @@ recognizer/.venv
 .env
 .env*.local
 
+# runtime data (play history)
+.data/
+
 # hook + tool logs (may contain secrets/tool output) — never commit
 logs/
 **/logs/

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { setNowPlaying } from "@/lib/store";
+import { appendHistory } from "@/lib/history";
 import type { NowPlaying, StreamingLinks } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -118,5 +119,6 @@ export async function POST(request: Request) {
   };
   console.log(`[recognize] backend=${backend} matched: ${nowPlaying.artist} — ${nowPlaying.title}`);
   await setNowPlaying(nowPlaying);
+  await appendHistory(nowPlaying);
   return NextResponse.json({ recognized: true, nowPlaying });
 }

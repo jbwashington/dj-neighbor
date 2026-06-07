@@ -18,16 +18,22 @@ function clock(ms: number): string {
 
 export default function Home() {
   const [song, setSong] = useState<NowPlaying | null>(null);
+  const [history, setHistory] = useState<NowPlaying[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     let alive = true;
     async function poll() {
       try {
-        const res = await fetch("/api/now-playing", { cache: "no-store" });
-        const data = (await res.json()) as { nowPlaying: NowPlaying | null };
+        const [npRes, hRes] = await Promise.all([
+          fetch("/api/now-playing", { cache: "no-store" }),
+          fetch("/api/history", { cache: "no-store" }),
+        ]);
+        const np = (await npRes.json()) as { nowPlaying: NowPlaying | null };
+        const h = (await hRes.json()) as { history: NowPlaying[] };
         if (alive) {
-          setSong(data.nowPlaying);
+          setSong(np.nowPlaying);
+          setHistory(h.history ?? []);
           setLoaded(true);
         }
       } catch {
@@ -41,6 +47,11 @@ export default function Home() {
       clearInterval(id);
     };
   }, []);
+
+  // The newest history row is the current song; don't repeat it under the card.
+  const past = song
+    ? history.filter((h) => h.recognizedAt !== song.recognizedAt)
+    : history;
 
   return (
     <main className="wrap">
@@ -102,6 +113,46 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {past.length > 0 ? (
+        <section className="history">
+          <div className="history-head">Recently played</div>
+          <ul className="history-list">
+            {past.map((h) => (
+              <li className="history-row" key={`${h.recognizedAt}-${h.title}`}>
+                {h.artwork ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img className="history-art" src={h.artwork} alt="" />
+                ) : (
+                  <div className="history-art history-art-empty">🎵</div>
+                )}
+                <div className="history-info">
+                  <div className="history-title">{h.title}</div>
+                  <div className="history-artist">{h.artist}</div>
+                </div>
+                <div className="history-side">
+                  <div className="history-time">{clock(h.recognizedAt)}</div>
+                  <div className="history-links">
+                    {h.links.spotify ? (
+                      <a href={h.links.spotify} target="_blank" rel="noreferrer" title="Spotify">
+                        <span className="swatch spotify" />
+                      </a>
+                    ) : null}
+                    {h.links.appleMusic ? (
+                      <a href={h.links.appleMusic} target="_blank" rel="noreferrer" title="Apple Music">
+                        <span className="swatch apple" />
+                      </a>
+                    ) : null}
+                    <a href={h.links.youtubeMusic} target="_blank" rel="noreferrer" title="YouTube Music">
+                      <span className="swatch ytm" />
+                    </a>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
     </main>
   );
 }
