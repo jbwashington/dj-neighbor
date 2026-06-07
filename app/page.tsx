@@ -12,6 +12,10 @@ function timeAgo(ms: number): string {
   return `${h}h ago`;
 }
 
+function clock(ms: number): string {
+  return new Date(ms).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+}
+
 export default function Home() {
   const [song, setSong] = useState<NowPlaying | null>(null);
   const [loaded, setLoaded] = useState(false);
@@ -70,6 +74,11 @@ export default function Home() {
             <div className="title">{song.title}</div>
             <div className="artist">{song.artist}</div>
             {song.album ? <div className="album">{song.album}</div> : null}
+            {[song.released, song.genre, song.label].filter(Boolean).length > 0 ? (
+              <div className="album" style={{ opacity: 0.65, marginTop: 4 }}>
+                {[song.released, song.genre, song.label].filter(Boolean).join(" · ")}
+              </div>
+            ) : null}
           </div>
 
           <div className="links">
@@ -88,7 +97,9 @@ export default function Home() {
             </a>
           </div>
 
-          <div className="meta">heard {timeAgo(song.recognizedAt)}</div>
+          <div className="meta">
+            heard at {clock(song.recognizedAt)} · {timeAgo(song.recognizedAt)}
+          </div>
         </div>
       )}
     </main>

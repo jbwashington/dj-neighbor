@@ -10,6 +10,9 @@ interface Recognized {
   title: string;
   artist: string;
   album?: string;
+  released?: string;
+  label?: string;
+  genre?: string;
   artwork?: string;
   appleMusic?: string;
   spotify?: string;
@@ -41,7 +44,9 @@ interface AuddResult {
   artist?: string;
   title?: string;
   album?: string;
-  apple_music?: { url?: string; artwork?: { url?: string } };
+  label?: string;
+  release_date?: string;
+  apple_music?: { url?: string; artwork?: { url?: string }; genreNames?: string[] };
   spotify?: { external_urls?: { spotify?: string }; album?: { images?: { url?: string }[] } };
 }
 async function recognizeAudd(audio: Blob): Promise<Recognized | null> {
@@ -61,6 +66,9 @@ async function recognizeAudd(audio: Blob): Promise<Recognized | null> {
     title: r.title ?? "Unknown title",
     artist: r.artist ?? "Unknown artist",
     album: r.album,
+    released: r.release_date?.slice(0, 4),
+    label: r.label,
+    genre: r.apple_music?.genreNames?.[0],
     artwork: r.spotify?.album?.images?.[0]?.url ?? appleArt,
     appleMusic: r.apple_music?.url,
     spotify: r.spotify?.external_urls?.spotify,
@@ -101,6 +109,9 @@ export async function POST(request: Request) {
     title: recognized.title,
     artist: recognized.artist,
     album: recognized.album,
+    released: recognized.released,
+    label: recognized.label,
+    genre: recognized.genre,
     artwork: recognized.artwork,
     links: buildLinks(recognized.artist, recognized.title, recognized),
     recognizedAt: Date.now(),

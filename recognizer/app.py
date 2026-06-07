@@ -95,20 +95,24 @@ async def recognize(audio: UploadFile = File(...)):
 
     images = track.get("images") or {}
     sections = track.get("sections") or []
-    album = None
+
+    # Shazam puts album/label/released/etc. as title/text pairs in the SONG section.
+    meta = {}
     for section in sections:
-        for meta in section.get("metadata", []) or []:
-            if str(meta.get("title", "")).lower() == "album":
-                album = meta.get("text")
-                break
-        if album:
-            break
+        for m in section.get("metadata", []) or []:
+            title = str(m.get("title", "")).lower()
+            text = m.get("text")
+            if title and text:
+                meta[title] = text
 
     return {
         "matched": True,
         "title": track.get("title"),
         "artist": track.get("subtitle"),
-        "album": album,
+        "album": meta.get("album"),
+        "released": meta.get("released"),
+        "label": meta.get("label"),
+        "genre": (track.get("genres") or {}).get("primary"),
         "artwork": images.get("coverarthq") or images.get("coverart"),
         "appleMusic": apple_music_url(track),
         "spotify": first(deep_find(track, "open.spotify.com")),
