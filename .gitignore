@@ -1,0 +1,23 @@
+# dependencies / build
+node_modules
+.next
+out
+*.tsbuildinfo
+next-env.d.ts
+
+# python recognizer
+recognizer/.venv
+**/__pycache__/
+*.pyc
+.python-version
+
+# secrets / env
+.env
+.env*.local
+
+# hook + tool logs (may contain secrets/tool output) — never commit
+logs/
+**/logs/
+
+# os
+.DS_Store

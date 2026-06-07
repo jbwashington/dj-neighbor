@@ -1,0 +1,264 @@
+:root {
+  --bg: #0a0a0f;
+  --bg-glow: #1a1030;
+  --card: #15151f;
+  --text: #f3f3f7;
+  --muted: #9b9bb0;
+  --accent: #b794ff;
+  --spotify: #1db954;
+  --apple: #fc3c44;
+  --ytm: #ff0000;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(1200px 800px at 70% -10%, var(--bg-glow), transparent 60%),
+    var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+}
+
+.wrap {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  gap: 28px;
+}
+
+.kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.live-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 0 var(--accent);
+  animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(183, 148, 255, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(183, 148, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(183, 148, 255, 0);
+  }
+}
+
+.card {
+  width: 100%;
+  max-width: 460px;
+  background: var(--card);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 24px;
+  padding: 28px;
+  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  text-align: center;
+}
+
+.art {
+  width: 240px;
+  height: 240px;
+  border-radius: 18px;
+  object-fit: cover;
+  background: linear-gradient(135deg, #2a2140, #131320);
+  box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.artist {
+  font-size: 17px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.album {
+  font-size: 13px;
+  color: var(--muted);
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.link-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 15px;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition:
+    transform 0.12s ease,
+    background 0.12s ease;
+}
+
+.link-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.link-btn .swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.swatch.spotify {
+  background: var(--spotify);
+}
+.swatch.apple {
+  background: var(--apple);
+}
+.swatch.ytm {
+  background: var(--ytm);
+}
+
+.meta {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.empty {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.6;
+  max-width: 360px;
+}
+
+.footer-link {
+  font-size: 12px;
+  color: var(--muted);
+  text-decoration: none;
+  opacity: 0.6;
+}
+.footer-link:hover {
+  opacity: 1;
+}
+
+/* ---- Listener page ---- */
+.listen-card {
+  max-width: 460px;
+  width: 100%;
+  background: var(--card);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 24px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.listen-card h1 {
+  font-size: 22px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.field input {
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #0d0d15;
+  color: var(--text);
+  font-size: 15px;
+}
+
+.big-btn {
+  padding: 16px;
+  border-radius: 14px;
+  border: none;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  background: var(--accent);
+  color: #1a0f30;
+  transition: opacity 0.12s ease;
+}
+.big-btn:hover {
+  opacity: 0.9;
+}
+.big-btn.stop {
+  background: #ff5470;
+  color: #2a0010;
+}
+
+.status {
+  font-size: 14px;
+  color: var(--muted);
+  min-height: 22px;
+}
+
+.log {
+  font-size: 12px;
+  color: var(--muted);
+  background: #0d0d15;
+  border-radius: 12px;
+  padding: 12px;
+  max-height: 180px;
+  overflow-y: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  white-space: pre-wrap;
+}
