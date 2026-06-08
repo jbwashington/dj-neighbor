@@ -49,9 +49,10 @@ export default function Home() {
   }, []);
 
   // The newest history row is the current song; don't repeat it under the card.
-  const past = song
-    ? history.filter((h) => h.recognizedAt !== song.recognizedAt)
-    : history;
+  const past =
+    song && history[0]?.title === song.title && history[0]?.artist === song.artist
+      ? history.slice(1)
+      : history;
 
   return (
     <main className="wrap">
